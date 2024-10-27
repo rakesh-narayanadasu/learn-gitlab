@@ -1,0 +1,14 @@
+workflow:
+  name: Generate ASCII Artwork
+
+ascii_job:
+  before_script:
+    - gem install cowsay
+  script:
+    - echo "Generate ASCII Artwork using COWSAY Program"
+    - cowsay -f dragon "Run for cover, I am a DRAGON....RWAR" >> dragon.txt
+    - grep -i "dragon" dragon.txt
+    - cat dragon.txt
+  after_script:
+    - echo "Executed at the end, can be used for cleaning/removing content"
+    
