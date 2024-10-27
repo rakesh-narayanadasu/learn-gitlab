@@ -1,0 +1,20 @@
+linux_job:
+  tags:
+    - saas-linux-medium-amd64
+  script:
+    - echo "Linux OS version"
+    - cat /etc/os-release
+
+windows_job:
+  tags:
+    - shared windows
+  script:
+    - echo "Windows OS Version"
+    - systeminfo
+
+macos_job:
+  tags:
+    - saas-macos-medium-m1
+  script:
+    - echo "Mac OS Version"
+    - system_profiler SPSoftwareDataType
