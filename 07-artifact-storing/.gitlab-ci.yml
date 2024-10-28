@@ -1,0 +1,38 @@
+workflow:
+  name: Generate ASCII Artwork
+
+stages:     
+  - build   
+  - test
+  - deploy
+
+build_job:
+  stage: build   
+  before_script:
+    - gem install cowsay
+    - sleep 30s
+  script:
+    - >
+        cowsay -f dragon "Run for cover,
+        I am a DRAGON....RAWR" >> dragon.txt
+  artifacts:    #Use artifacts to specify which files to save as job artifacts
+    name: Dragon Texxt File
+    paths:
+      - dragon.txt   #Which file you want to create artifact
+    when: on_success #Creates artifact if build_job is success
+    expire_in: 3 days #Artifact expiry time
+
+test_job:
+  stage: test
+  script:
+    - |
+       sleep 10s
+       grep -i "dragon" dragon.txt
+
+deploy_job:
+  stage: deploy
+  script:
+    - cat dragon.txt
+    - echo "deploying........"
+
+#dragon.txt artifact is available for subsequent stage like test and deploy
