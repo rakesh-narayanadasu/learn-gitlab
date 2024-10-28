@@ -1,0 +1,32 @@
+workflow:
+  name: Generate ASCII Artwork
+
+stages:     #stages is a global level keyword
+  - build   #Defining order of job execution build > text > deploy
+  - test
+  - deploy
+
+build_job:
+  stage: build   #stage keyword is used to associate the stages with the job
+  before_script:
+    - gem install cowsay
+    - sleep 30s
+  script:
+    - >
+        cowsay -f dragon "Run for cover,
+        I am a DRAGON....RAWR" >> dragon.txt
+
+test_job:
+  stage: test
+  script:
+    - |
+       sleep 10s
+       grep -i "dragon" dragon.txt
+
+deploy_job:
+  stage: deploy
+  script:
+    - cat dragon.txt
+    - echo "deploying........"
+
+#Pipeline failed because test_job unable to find dragon.txt file. This occurs because jobs are running in different VM's and the artifacts created in build_job are not directly available in test_job
