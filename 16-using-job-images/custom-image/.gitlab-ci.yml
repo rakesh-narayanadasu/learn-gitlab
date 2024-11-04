@@ -1,0 +1,13 @@
+workflow:
+  name: Exploring Gitlab CI Concepts
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      variables:
+        DEPLOY_VARIABLE: PRODUCTION
+
+deploy_job:
+  resource_group: production
+  image: node:22-alpine3.19 #from dockerhub
+  script:
+    - node -v
+    - npm -v

@@ -1,0 +1,16 @@
+workflow:
+  name: Exploring Gitlab CI Concepts
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      variables:
+        DEPLOY_VARIABLE: PRODUCTION
+
+deploy_job:
+  resource_group: production
+  before_script:  #https://deb.nodesource.com/
+    - curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    - apt-get install -y nodejs
+  
+  script:
+    - node -v
+    - npm -v
