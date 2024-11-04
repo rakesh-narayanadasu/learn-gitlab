@@ -1,0 +1,72 @@
+workflow:
+  name: Generate ASCII Artwork
+
+stages:     
+  - build   
+  - test
+  - docker
+  - deploy
+
+variables:    #Defining  global level variables
+  KEY: value
+  USERNAME: dockerUsername
+  REGISTRY: docker.io/$USERNAME
+  IMAGE: ascii-network
+  VERSION: $CI_PIPELINE_ID  #Pre-defined variables
+
+build_job:
+  stage: build   
+  before_script:
+    - gem install cowsay
+    - sleep 30s
+  script:
+    - >
+        cowsay -f dragon "Run for cover,
+        I am a DRAGON....RAWR" >> dragon.txt
+  artifacts:    
+    name: Dragon Texxt File
+    paths:
+      - dragon.txt   
+    when: on_success 
+    expire_in: 3 days  
+
+test_job:
+  stage: test
+  script:
+    - |
+       sleep 10s
+       grep -i "dragon" dragon.txt
+
+docker_build: 
+  stage: docker
+  script:
+    - echo "docker build -t $REGISTRY/$IMAGE:$VERSION" #docker build -t docker.io/dockerUsername/ascii-network:LATEST
+    - sleep 15s
+
+docker_testing:
+  stage: docker
+  needs:  
+    - docker_build
+  script:
+    - echo "docker run -p 80:80 $REGISTRY/$IMAGE:$VERSION"
+    - sleep 10s
+
+docker_push:
+  stage: docker
+  needs:
+    - docker_testing
+  variables:    #Defining job level variable
+    PASSWORD: S3CurePaSsw0rd
+  script:
+    - echo "docker login --username=$USERNAME --password=$PASSWORD"
+    - echo "docker push $REGISTRY/$IMAGE:$VERSION"
+
+deploy_ec2_job:
+  stage: deploy
+  script:
+    - cat dragon.txt
+    - echo "deploying........"
+    - echo "Username:$USERNAME and Password:$PASSWORD"  
+    
+#Only Username is able to access, because it is defined at global level but Password is empty because it available only at docker_push job level 
+
