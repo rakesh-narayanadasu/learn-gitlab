@@ -1,0 +1,29 @@
+workflow:
+    name: Exploring Predefined Variable Pipeline
+
+export_variable_job:
+  script:
+    - export    #used to List all available pre-defined variables
+
+generic_predefined_variables:
+    script: |
+         echo "GITLAB_USER_LOGIN - $GITLAB_USER_LOGIN"
+         echo "GITLAB_USER_EMAIL - $GITLAB_USER_EMAIL"
+         echo "CI_COMMIT_AUTHOR - $CI_COMMIT_AUTHOR"
+         echo "CI_COMMIT_BRANCH - $CI_COMMIT_BRANCH"
+         echo "CI_PROJECT_NAME - $CI_PROJECT_NAME"
+         echo "CI_PROJECT_URL - $CI_PROJECT_URL"
+         echo "CI_JOB_STAGE - $CI_JOB_STAGE"              #default stage name is TEST
+         echo "CI_PIPELINE_NAME - $CI_PIPELINE_NAME"      #we need to add workflow---name at global level
+         echo "CI_PIPELINE_ID - $CI_PIPELINE_ID"
+         echo "CI_PIPELINE_SOURCE - $CI_PIPELINE_SOURCE"
+               
+merge_request_predefined_variables:   #only available when working with merger request which is similar to GitHub pull request
+    rules:      #Use rules to include or exclude jobs in pipelines
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"	
+    script: |
+         echo "CI_MERGE_REQUEST_LABELS - $CI_MERGE_REQUEST_LABELS"
+         echo "CI_MERGE_REQUEST_TARGET_BRANCH_NAME - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+         echo "CI_MERGE_REQUEST_ASSIGNEES - $CI_MERGE_REQUEST_ASSIGNEES"
+         echo "CI_MERGE_REQUEST_SOURCE_BRANCH_NAME - $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
+         echo "CI_MERGE_REQUEST_TITLE - $CI_MERGE_REQUEST_TITLE"
