@@ -1,0 +1,66 @@
+workflow:
+  name: Generate ASCII Artwork
+
+stages:     
+  - build   
+  - test
+  - docker
+  - deploy
+
+build_job:
+  stage: build   
+  before_script:
+    - gem install cowsay
+    - sleep 30s
+  script:
+    - >
+        cowsay -f dragon "Run for cover,
+        I am a DRAGON....RAWR" >> dragon.txt
+  artifacts:    
+    name: Dragon Texxt File
+    paths:
+      - dragon.txt   
+    when: on_success 
+    expire_in: 3 days  
+
+test_job:
+  stage: test
+  script:
+    - |
+       sleep 10s
+       grep -i "dragon" dragon.txt
+
+docker_build: #Multiple jobs within the same stage runs parallel. Here stage: docker is common for docker_build, docker_testing and docker_push
+  stage: docker
+#  needs:
+#    - build_job #This job executes after build_job is executed
+  script:
+    - echo "docker build -t docker.io/dockerUsername/imageName:version"
+    - sleep 15s
+
+docker_testing:
+  stage: docker
+  needs:  #docker_testing job executes only after docker_build job
+    - docker_build
+  script:
+    - echo "docker run -p 80:80 docker.io/dockerUsername/imageName:version"
+    - sleep 10s
+    - exit 1
+
+docker_push:
+  stage: docker
+  needs:
+    - docker_testing
+  script:
+    - echo "docker login --username=dockerUsername --password=dockerPassword"
+    - echo "docker push docker.io/dockerUsername/imageName:version"
+
+deploy_ec2_job:
+  stage: deploy
+  script:
+    - cat dragon.txt
+    - echo "deploying........"
+
+#needs keyword used to execute jobs out-of-order
+#If you have multiple jobs within the same stage those jobs can be executed in sequence.
+#You can ignore stage ordering and run some jobs without waiting for others to complete. 
