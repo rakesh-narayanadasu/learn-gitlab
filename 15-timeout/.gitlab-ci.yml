@@ -1,0 +1,17 @@
+workflow:
+  name: Exploring Gitlab CI Concepts
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      variables:
+        DEPLOY_VARIABLE: PRODUCTION
+
+deploy_job:
+  resource_group: production
+  timeout: 10s #job fails because we said job to sleep 300 seconds
+  script:
+    - echo "Deploying application...."
+    - sleep 300s
+    - echo "Application successfully deployed to $DEPLOY_VARIABLE environment"
+
+
+
