@@ -1,0 +1,16 @@
+workflow:
+  name: Exploring Gitlab CI Concepts
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      variables:
+        DEPLOY_VARIABLE: PRODUCTION
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/ && $CI_PIPELINE_SOURCE == 'merge_request_event' #two conditions must satisfy and pipeline will trigger only when changes are made to README.md file
+      changes:
+        - README.md  
+      variables:
+          DEPLOY_VARIABLE: TESTING
+
+deploy_job:
+  script:
+    - echo "Deploying application...."
+    - echo "Application successfully deployed to $DEPLOY_VARIABLE environment"
