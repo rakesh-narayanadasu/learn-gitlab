@@ -1,0 +1,23 @@
+workflow:
+  name: Solar System NodeJS Pipeline
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main' || $CI_COMMIT_BRANCH =~ /^feature/
+      when: always
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/ && $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: always
+
+stages:
+  - test
+
+variables:
+    MONGO_URI: '$MONGO_URI' #Configure variables Settings > CI/CD > Variables
+    MONGO_USERNAME: $MONGO_USERNAME
+    MONGO_PASSWORD: $MONGO_PASSWORD
+
+unit_testing:
+  stage: test
+  image: node:17-alpine3.14
+  before_script:
+    - npm install
+  script:
+    - npm test
