@@ -1,0 +1,3 @@
+[submodule "19-demo-projects/19-demo-projects/solar-system"]
+	path = 19-demo-projects/19-demo-projects/solar-system
+	url = https://github.com/rakesh-narayanadasu/learn-gitlab.git
