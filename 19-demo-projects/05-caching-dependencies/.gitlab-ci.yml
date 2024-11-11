@@ -1,0 +1,68 @@
+workflow:
+  name: Solar System NodeJS Pipeline
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main' || $CI_COMMIT_BRANCH =~ /^feature/
+      when: always
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/ && $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: always
+
+stages:
+  - test
+
+variables:
+    MONGO_URI: '$MONGO_URI' 
+    MONGO_USERNAME: $MONGO_USERNAME
+    MONGO_PASSWORD: $MONGO_PASSWORD
+
+unit_testing:
+  stage: test
+  image: node:17-alpine3.14
+  cache:
+    policy: pull-push
+    when: on_success
+    paths:
+      - node_modules  # You need to define the path which needs to be cached, it could be single file or array of files or directories
+    key:              # So as long as the  key is same, it's going to download the same cache and use it across jobs or across the pipelines.
+      files:
+        - package-lock.json   # Whenever you make a change to the file, it's going to generate a unique SHA value and that is going to be used as the cache key.
+      prefix: node_modules
+  before_script:
+    - npm install
+  script:
+    - npm test
+  artifacts:
+    name: Moca-Test-Result
+    when: always
+    expire_in: 3 days
+    paths:
+      - test-results.xml
+    reports:
+      junit: test-results.xml
+
+code_coverage:
+  stage: test
+  image: node:17-alpine3.14
+  cache:
+    policy: pull-push
+    when: on_success
+    paths:
+      - node_modules  # What files to cache
+    key:  # When the package-lock.json file changes, a new cache key is computed and a new cache is created.
+      files:
+        - package-lock.json
+      prefix: node_modules
+  before_script:
+    - npm install
+  script:
+    - npm run coverage
+  artifacts:
+    name: Code-Coverage-Result
+    when: always
+    expire_in: 3 days
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+  coverage: /All files[^\|]*\|[^\|]*\s+([\d\.]+)/ 
+  allow_failure: true #This job is ignored even when the job is failed
+
